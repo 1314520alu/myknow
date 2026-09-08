@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B1220" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MyKnow" />
+  <title>MyKnow 资料库</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="icon" href="./icon-192.png" />
+  <style>
+    :root {
+      --ink: #0b1220;
+      --raised: #121c2c;
+      --high: #1a2740;
+      --sand: #e8a838;
+      --foam: #4ecdc4;
+      --cloud: #e8eef4;
+      --mist: #9aa4b2;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--ink); color: var(--cloud); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif; }
+    body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+    a { color: var(--foam); }
+    header.app {
+      padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+      background: var(--ink);
+      position: sticky; top: 0; z-index: 5;
+    }
+    header.app h1 { margin: 0; font-size: 22px; }
+    header.app p { margin: 4px 0 0; color: var(--mist); font-size: 13px; }
+    .install {
+      display: none; margin: 12px 16px 0; padding: 12px 14px; border-radius: 14px;
+      background: #3d2e12; color: #ffe2a8; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .install.show { display: flex; }
+    .install button, .nav button, .chip {
+      border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 600; cursor: pointer;
+    }
+    .install button { background: var(--sand); color: #1a1204; }
+    .chips { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 8px; }
+    .chip { background: var(--high); color: var(--cloud); white-space: nowrap; }
+    .chip.on { background: var(--sand); color: #1a1204; }
+    .list { padding: 8px 16px 24px; display: grid; gap: 10px; }
+    .card {
+      background: var(--raised); border-radius: 16px; padding: 16px; text-align: left;
+      color: inherit; text-decoration: none; display: block; border: 0; width: 100%; cursor: pointer;
+    }
+    .kicker { color: var(--sand); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+    .card h2 { margin: 6px 0 4px; font-size: 17px; }
+    .card p, .note { margin: 0; color: var(--mist); font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+    .search { width: 100%; margin: 0 0 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid #3a4a63; background: var(--raised); color: var(--cloud); font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; background: var(--raised); border-radius: 16px; overflow: hidden; }
+    th, td { padding: 10px 12px; text-align: left; font-size: 14px; border-bottom: 1px solid #3a4a63; vertical-align: top; }
+    th { color: var(--mist); width: 38%; font-weight: 500; }
+    td { font-family: ui-monospace, Menlo, Consolas, monospace; }
+    .back { background: none; color: var(--foam); border: 0; padding: 0 0 8px; font-size: 15px; cursor: pointer; }
+    .nav {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      background: var(--raised); padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    }
+    .nav button { background: transparent; color: var(--mist); }
+    .nav button.on { color: var(--sand); }
+    .page { display: none; }
+    .page.on { display: block; }
+  </style>
+</head>
+<body>
+  <div id="installBar" class="install">
+    <span>安装到手机桌面，不用下载 APK</span>
+    <button id="installBtn" type="button">安装</button>
+  </div>
+
+  <section id="page-list" class="page on">
+    <header class="app">
+      <h1>MyKnow</h1>
+      <p>好盈 H15 Plus 资料</p>
+    </header>
+    <div class="chips" id="chips"></div>
+    <div class="list" id="deviceList"></div>
+  </section>
+
+  <section id="page-docs" class="page">
+    <header class="app"><h1>文档</h1><p>接线、保护、拉力对照</p></header>
+    <div class="list" id="docList"></div>
+  </section>
+
+  <section id="page-search" class="page">
+    <header class="app"><h1>搜索</h1></header>
+    <div class="list">
+      <input class="search" id="q" placeholder="搜 H15、电调、CAN、拉力…" />
+      <div id="searchHits"></div>
+    </div>
+  </section>
+
+  <section id="page-detail" class="page">
+    <header class="app">
+      <button class="back" type="button" id="backBtn">← 返回</button>
+      <h1 id="detailTitle">资料</h1>
+    </header>
+    <div class="list" id="detailBody"></div>
+  </section>
+
+  <nav class="nav">
+    <button type="button" data-tab="list" class="on">器件</button>
+    <button type="button" data-tab="docs">文档</button>
+    <button type="button" data-tab="search">搜索</button>
+  </nav>
+
+<script>
+const PRODUCT = "https://www.hobbywing.com/products/h15-plus-new";
+const SPEC = "https://www.hobbywing.com/uploads/file/20260228/a87197efd698c80fd69797af9c3ce88d.pdf";
+const MANUAL = "https://www.hobbywing.com/uploads/file/20260320/723c602bafe0eb4c9c582b5bef198b8e.pdf";
+const TYPES = { PROPULSION: "动力套", ESC: "电调", MOTOR: "电机", PROPELLER: "桨叶" };
+const CATS = { WIRING: "接线与安装", SAFETY: "安全与维护", MATCHING: "选型匹配" };
+
+const devices = [
+  {
+    id: "kit", type: "PROPULSION", brand: "好盈 Hobbywing",
+    model: "H15MD Plus（原 H15 Plus）",
+    notes: "现名 H15MD Plus，原品名 H15 Plus。行业共轴一体动力。料号 HW-SMC819DUL00。\n单轴推荐起飞重量 80 kg，最大拉力 195 kg（海平面，只作机动/抗风冗余）。适配 24S~28S LiPo，额定 24S-92V / 28S-108V，输入 36~130 V。IPX6，-40~60℃。碳管 Ø80 mm / 壁厚 5 mm。重量 14550±200 g（含线不含桨）。",
+    url: PRODUCT,
+    specs: [
+      ["产品型号", "H15MD Plus-24S"], ["原品名", "H15 Plus"], ["料号", "HW-SMC819DUL00"],
+      ["最大拉力", "195 kg"], ["单轴推荐拉力", "80 kg"], ["推荐力效", "7.5 g/W"],
+      ["适配电池", "24S~28S LiPo"], ["额定电压", "24S-92V / 28S-108V"], ["电压范围", "36~130 V"],
+      ["额定输入功率", "10600 W"], ["额定输出功率", "9300 W"],
+      ["碳管", "Ø80 mm / 壁厚 5 mm"], ["防护", "IPX6"], ["温度", "-40~60 ℃"],
+      ["重量(含线不含桨)", "14550±200 g"], ["电源线", "7AWG 2500±50 mm"],
+      ["信号线", "2700±50 mm"], ["油门", "PWM + CAN"], ["调参盒", "DataLinkBox G3"],
+      ["推荐桨叶", "MSC 73x21 / MFC 73x23"]
+    ]
+  },
+  {
+    id: "esc", type: "ESC", brand: "好盈 Hobbywing", model: "H15MD Plus 电调",
+    notes: "FOC 电调，持续 110 A，瞬时 300 A/3s。尺寸 156×83.6×54.5 mm，616±5 g。双油门 PWM+CAN。无低压保护、无过温停转。首次启动约 3 s 延时。",
+    url: SPEC,
+    specs: [
+      ["持续电流", "110 A"], ["瞬时电流", "300 A / 3s"], ["电压范围", "36~130 V"],
+      ["通讯", "UAVCAN / Cyphal"], ["CAN", "HWCAN 默认 / DroneCAN"],
+      ["PWM脉宽", "1100-1940 μs"], ["PWM频率", "50-500 Hz"], ["油门校准", "不支持"],
+      ["CAN波特率", "500 kbps"], ["CAN电阻", "无终端电阻"], ["日志", "2-48 h"],
+      ["尺寸", "156×83.6×54.5 mm"], ["重量", "616±5 g"]
+    ]
+  },
+  {
+    id: "motor", type: "MOTOR", brand: "好盈 Hobbywing", model: "H15MD Plus 电机 31KV",
+    notes: "KV 31，外径 167.1 mm，定子 Φ155.6×H35 mm，36N42P。含线 4100±100 g。三轴承，标配温度监测。",
+    url: SPEC,
+    specs: [["KV", "31 rpm/V"], ["外径", "167.1 mm"], ["定子", "Φ155.6×H35 mm"], ["槽极", "36N42P"], ["重量(含线)", "4100±100 g"], ["桨孔深", "12 mm"]]
+  },
+  {
+    id: "msc", type: "PROPELLER", brand: "好盈 Hobbywing", model: "MSC 73x21 直桨",
+    notes: "原厂直桨，碳纤维，1300±20 g。D60-6×M6，中心孔 D20。M6×16 / 8 N·m。必须原厂配套桨。",
+    url: PRODUCT,
+    specs: [["型号", "MSC 73x21"], ["类型", "直桨"], ["重量", "1300±20 g"], ["安装", "D60-6×M6，中心孔 D20"], ["螺丝", "M6×16 / 8 N·m"]]
+  },
+  {
+    id: "mfc", type: "PROPELLER", brand: "好盈 Hobbywing", model: "MFC 73x23 折叠桨",
+    notes: "原厂折叠桨，1854.8±32 g。D46-4×M6，中心孔 D16。M6×14 / 8 N·m。支持定桨。",
+    url: PRODUCT,
+    specs: [["型号", "MFC 73x23"], ["类型", "折叠桨"], ["重量", "1854.8±32 g"], ["安装", "D46-4×M6，中心孔 D16"], ["螺丝", "M6×14 / 8 N·m"]]
+  }
+];
+
+const articles = [
+  { id: "wiring", cat: "WIRING", title: "H15 Plus 接线与线序", body:
+`电源：7AWG，红正黑负，2500±50 mm。
+
+PWM（黑白）
+• 黑 GND　白 油门 Signal
+• 脉宽 1100~1940 μs，50~500 Hz，5V/3.3V
+
+CAN（黄灰绿）
+• 黄 CAN GND　灰 CH　绿 CL
+• 出厂 HWCAN，可选 DroneCAN；无终端电阻；500 kbps
+• 出厂 ID=1 通道=1，同机不能重复
+• 数字油门建议怠速 6%` },
+  { id: "install", cat: "WIRING", title: "H15 Plus 安装与碳管", body:
+`组成：电机×2、电调×2、桨×2、电机座、螺钉、LED。
+碳管 Ø80 mm，壁厚 5 mm（可 3 mm），电机座 3° 倾角。
+直桨 MSC 73x21；折叠桨 MFC 73x23。调试先卸桨。禁止换非配套桨。` },
+  { id: "protect", cat: "SAFETY", title: "H15 Plus 保护与告警", body:
+`无低压保护、无过温停转。
+上电 36~130 V 才能自检。堵转重启 3 次后关输出。
+过流约 800 A / 4 μs。油门丢失 >1 s 关输出。
+首次启动约 3 s 延时，飞控要加斜坡，否则弹射起飞。
+MOS>110℃ 或电容>100℃ 只告警不停转。` },
+  { id: "thrust", cat: "MATCHING", title: "H15 Plus 24S 拉力对照", body:
+`92V / MSC 73x21 / 海平面 / 仅供参考
+
+33%  22.2 kg   19.3 A    12.5 g/W
+50%  55.4 kg   68.2 A     8.8 g/W
+58%  76.7 kg  109.5 A     7.6 g/W
+60%  82.6 kg  122.1 A     7.4 g/W
+100% 195.0 kg  465.8 A     4.5 g/W
+
+推荐 80 kg ≈ 58%~60% 油门。195 kg 不是额定载荷。` },
+  { id: "caution", cat: "SAFETY", title: "H15 Plus 使用注意", body:
+`工业非载人。-40~60℃。必须原厂桨。禁止超载。禁止私拆。落地后先别摸，很烫。地面测试不要带桨。` }
+];
+
+const $ = (id) => document.getElementById(id);
+let filter = "";
+
+function showPage(name) {
+  document.querySelectorAll(".page").forEach((el) => el.classList.toggle("on", el.id === "page-" + name));
+  document.querySelectorAll(".nav button").forEach((btn) => btn.classList.toggle("on", btn.dataset.tab === name));
+  window.scrollTo(0, 0);
+}
+
+function renderChips() {
+  const keys = ["", "PROPULSION", "ESC", "MOTOR", "PROPELLER"];
+  $("chips").innerHTML = keys.map((key) =>
+    `<button class="chip ${filter === key ? "on" : ""}" data-type="${key}">${key ? TYPES[key] : "全部"}</button>`
+  ).join("");
+}
+
+function renderDevices() {
+  const rows = devices.filter((d) => !filter || d.type === filter);
+  $("deviceList").innerHTML = rows.map((d) => `
+    <button class="card" data-open="device:${d.id}">
+      <div class="kicker">${TYPES[d.type]}</div>
+      <h2>${d.model}</h2>
+      <p>${d.notes.split("\n")[0]}</p>
+    </button>`).join("");
+}
+
+function renderDocs() {
+  $("docList").innerHTML = articles.map((a) => `
+    <button class="card" data-open="doc:${a.id}">
+      <div class="kicker">${CATS[a.cat]}</div>
+      <h2>${a.title}</h2>
+    </button>`).join("");
+}
+
+function specTable(specs) {
+  return `<table>${specs.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}</table>`;
+}
+
+function openDevice(id) {
+  const d = devices.find((x) => x.id === id);
+  if (!d) return;
+  $("detailTitle").textContent = d.model;
+  $("detailBody").innerHTML = `
+    <div class="kicker">${d.brand} · ${TYPES[d.type]}</div>
+    ${specTable(d.specs)}
+    <p class="note">${d.notes}</p>
+    <p><a href="${d.url}" target="_blank" rel="noopener">打开官方资料</a>
+    · <a href="${SPEC}" target="_blank" rel="noopener">技术参数 PDF</a>
+    · <a href="${MANUAL}" target="_blank" rel="noopener">说明书 PDF</a></p>`;
+  showPage("detail");
+}
+
+function openDoc(id) {
+  const a = articles.find((x) => x.id === id);
+  if (!a) return;
+  $("detailTitle").textContent = a.title;
+  $("detailBody").innerHTML = `<div class="kicker">${CATS[a.cat]}</div><p class="note">${a.body}</p>`;
+  showPage("detail");
+}
+
+function search(text) {
+  const q = text.trim().toLowerCase();
+  const hits = [];
+  if (!q) { $("searchHits").innerHTML = ""; return; }
+  devices.forEach((d) => {
+    const blob = [d.model, d.notes, ...d.specs.flat()].join(" ").toLowerCase();
+    if (blob.includes(q)) hits.push(`<button class="card" data-open="device:${d.id}"><div class="kicker">${TYPES[d.type]}</div><h2>${d.model}</h2></button>`);
+  });
+  articles.forEach((a) => {
+    if ((a.title + a.body).toLowerCase().includes(q)) hits.push(`<button class="card" data-open="doc:${a.id}"><div class="kicker">文档</div><h2>${a.title}</h2></button>`);
+  });
+  $("searchHits").innerHTML = hits.join("") || `<p class="note">没有匹配</p>`;
+}
+
+document.addEventListener("click", (e) => {
+  const chip = e.target.closest("[data-type]");
+  if (chip) { filter = chip.dataset.type; renderChips(); renderDevices(); return; }
+  const tab = e.target.closest("[data-tab]");
+  if (tab) { showPage(tab.dataset.tab); return; }
+  const open = e.target.closest("[data-open]");
+  if (open) {
+    const [kind, id] = open.dataset.open.split(":");
+    if (kind === "device") openDevice(id);
+    else openDoc(id);
+  }
+});
+$("backBtn").onclick = () => showPage("list");
+$("q").addEventListener("input", (e) => search(e.target.value));
+
+renderChips();
+renderDevices();
+renderDocs();
+
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $("installBar").classList.add("show");
+});
+$("installBtn").onclick = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  $("installBar").classList.remove("show");
+};
+if (window.matchMedia("(display-mode: standalone)").matches) {
+  $("installBar").classList.remove("show");
+}
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
+</script>
+</body>
+</html>
