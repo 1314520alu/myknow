@@ -1,6 +1,6 @@
 # MyKnow 无人机资料库
 
-查阅好盈 **H15 Plus / H15MD Plus** 参数、接线、保护和拉力对照。
+查阅好盈 **H13MD**、**H15 Plus / H15MD Plus** 参数、接线、保护和拉力对照。
 
 最低系统：Android 8.0。
 

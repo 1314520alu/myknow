@@ -78,7 +78,7 @@
   <section id="page-list" class="page on">
     <header class="app">
       <h1>MyKnow</h1>
-      <p>好盈 H15 Plus 资料</p>
+      <p>好盈 H13MD / H15 Plus 资料</p>
     </header>
     <div class="chips" id="chips"></div>
     <div class="list" id="deviceList"></div>
@@ -92,7 +92,7 @@
   <section id="page-search" class="page">
     <header class="app"><h1>搜索</h1></header>
     <div class="list">
-      <input class="search" id="q" placeholder="搜 H15、电调、CAN、拉力…" />
+      <input class="search" id="q" placeholder="搜 H13、H15、电调、CAN、拉力…" />
       <div id="searchHits"></div>
     </div>
   </section>
@@ -115,6 +115,9 @@
 const PRODUCT = "https://www.hobbywing.com/products/h15-plus-new";
 const SPEC = "https://www.hobbywing.com/uploads/file/20260228/a87197efd698c80fd69797af9c3ce88d.pdf";
 const MANUAL = "https://www.hobbywing.com/uploads/file/20260320/723c602bafe0eb4c9c582b5bef198b8e.pdf";
+const H13_PRODUCT = "https://www.hobbywing.com/products/h13a";
+const H13_SPEC = "https://www.hobbywing.com/uploads/file/20260309/33612d30c3835d5a4e4e2f36884d6e32.pdf";
+const H13_MANUAL = "https://www.hobbywing.com/en/uploads/file/20250828/680e2e2e8798f49de283d412ff1c6cf6.pdf";
 const TYPES = { PROPULSION: "动力套", ESC: "电调", MOTOR: "电机", PROPELLER: "桨叶" };
 const CATS = { WIRING: "接线与安装", SAFETY: "安全与维护", MATCHING: "选型匹配" };
 
@@ -164,6 +167,52 @@ const devices = [
     notes: "原厂折叠桨，1854.8±32 g。D46-4×M6，中心孔 D16。M6×14 / 8 N·m。支持定桨。",
     url: PRODUCT,
     specs: [["型号", "MFC 73x23"], ["类型", "折叠桨"], ["重量", "1854.8±32 g"], ["安装", "D46-4×M6，中心孔 D16"], ["螺丝", "M6×14 / 8 N·m"]]
+  },
+  {
+    id: "h13-kit", type: "PROPULSION", brand: "好盈 Hobbywing",
+    model: "H13MD 共轴一体动力",
+    notes: "行业共轴一体动力。料号 HW-SMC809DUL00。电机 13825-37KV，电调 H150A FOC。\n单轴推荐拉力 45 kg，最大拉力 110 kg（MSC 54x20）/ 113 kg（MSC 57x20），只作机动/抗风冗余。4 轴 8 桨推荐起飞约 180 kg，载荷约 100 kg。适配 24S~28S LiPo，额定 24S-92V / 28S-108V，输入 30~130 V。IP35，-40~65℃。碳管 Ø60 mm / 壁厚约 2.5 mm。重量（含线、桨）7890±100 g / 8010±100 g。",
+    url: H13_PRODUCT, spec: H13_SPEC, manual: H13_MANUAL,
+    specs: [
+      ["产品型号", "H13MD MSC 54x20 / MSC 57x20"], ["料号", "HW-SMC809DUL00"],
+      ["最大拉力", "110 / 113 kg"], ["单轴推荐拉力", "45 kg"], ["推荐力效", "6.8 / 7.2 g/W"],
+      ["适配电池", "24S~28S LiPo"], ["额定电压", "24S-92V / 28S-108V"], ["电压范围", "30~130 V"],
+      ["额定输入功率", "6500 W（54x20）"], ["额定输出功率", "5720 / 5544 W"],
+      ["碳管", "Ø60 mm / 壁厚约 2.5 mm"], ["防护", "IP35"], ["温度", "-40~65 ℃"],
+      ["重量(含线、桨)", "7890±100 / 8010±100 g"], ["电源线", "12AWG 1440±20 mm"],
+      ["信号线", "1640±20 mm"], ["油门", "PWM + CAN"], ["调参盒", "DataLinkBox G3"],
+      ["推荐桨叶", "MSC 54x20 / MSC 57x20"]
+    ]
+  },
+  {
+    id: "h13-esc", type: "ESC", brand: "好盈 Hobbywing", model: "H13MD 电调 H150A FOC",
+    notes: "FOC 电调，持续 60 A，瞬时 150 A/3s。尺寸 132.5×67.5×37.4 mm（带插头），395 g。双油门 PWM+CAN。无低压保护、无过温停转。油门丢失立即关输出。过流阈值约 360 A。",
+    url: H13_SPEC, spec: H13_SPEC, manual: H13_MANUAL,
+    specs: [
+      ["持续电流", "60 A"], ["瞬时电流", "150 A / 3s"], ["电压范围", "30~130 V"],
+      ["通讯", "UAVCAN"], ["CAN", "UAVCAN / DroneCAN"],
+      ["PWM脉宽", "1100-1940 μs"], ["PWM频率", "50-500 Hz"], ["油门校准", "不支持"],
+      ["CAN波特率", "500 kbps"], ["故障存储", "支持"],
+      ["尺寸", "132.5×67.5×37.4 mm"], ["重量", "395 g"]
+    ]
+  },
+  {
+    id: "h13-motor", type: "MOTOR", brand: "好盈 Hobbywing", model: "H13MD 电机 13825-37KV",
+    notes: "KV 37，外径 147.9 mm，36N42P。含线 2450±50 g。适配 Ø60 mm 碳管，3° 倾角。",
+    url: H13_SPEC, spec: H13_SPEC, manual: H13_MANUAL,
+    specs: [["型号", "13825-37KV"], ["KV", "37 rpm/V"], ["外径", "147.9 mm"], ["槽极", "36N42P"], ["重量(含线)", "2450±50 g"], ["碳管", "Ø60 mm / 3°"]]
+  },
+  {
+    id: "h13-msc54", type: "PROPELLER", brand: "好盈 Hobbywing", model: "MSC 54x20 直桨",
+    notes: "H13MD 原厂直桨，碳纤维，420±15 g。D40-4×M5，中心孔 D15。左旋 15 N·m / 右旋 25 N·m。必须原厂配套桨。",
+    url: H13_PRODUCT, spec: H13_SPEC, manual: H13_MANUAL,
+    specs: [["型号", "MSC 54x20"], ["类型", "直桨"], ["重量", "420±15 g"], ["安装", "D40-4×M5，中心孔 D15"], ["扭矩", "左旋 15 / 右旋 25 N·m"]]
+  },
+  {
+    id: "h13-msc57", type: "PROPELLER", brand: "好盈 Hobbywing", model: "MSC 57x20 直桨",
+    notes: "H13MD 原厂直桨，碳纤维，480±15 g。D40-4×M5，中心孔 D15。左旋 15 N·m / 右旋 25 N·m。必须原厂配套桨。",
+    url: H13_PRODUCT, spec: H13_SPEC, manual: H13_MANUAL,
+    specs: [["型号", "MSC 57x20"], ["类型", "直桨"], ["重量", "480±15 g"], ["安装", "D40-4×M5，中心孔 D15"], ["扭矩", "左旋 15 / 右旋 25 N·m"]]
   }
 ];
 
@@ -201,7 +250,38 @@ MOS>110℃ 或电容>100℃ 只告警不停转。` },
 
 推荐 80 kg ≈ 58%~60% 油门。195 kg 不是额定载荷。` },
   { id: "caution", cat: "SAFETY", title: "H15 Plus 使用注意", body:
-`工业非载人。-40~60℃。必须原厂桨。禁止超载。禁止私拆。落地后先别摸，很烫。地面测试不要带桨。` }
+`工业非载人。-40~60℃。必须原厂桨。禁止超载。禁止私拆。落地后先别摸，很烫。地面测试不要带桨。` },
+  { id: "h13-wiring", cat: "WIRING", title: "H13MD 接线与线序", body:
+`电源：12AWG，红正黑负，1440±20 mm。
+
+PWM（黑白）
+• 黑 GND　白 油门 Signal
+• 脉宽 1100~1940 μs，50~500 Hz，不支持校准
+
+CAN（红灰）
+• 红 CH　灰 CL
+• UAVCAN，支持 DroneCAN；出厂 ID=1 通道=1；500 kbps
+• DataLinkBox G3：红灰 → CH1/CL1` },
+  { id: "h13-install", cat: "WIRING", title: "H13MD 安装与碳管", body:
+`组成：电机×2、电调×2、桨×2、电机座、螺钉、LED。出厂已组装。
+碳管 Ø60 mm，壁厚约 2.5 mm，电机座 3° 倾角。转向看出厂标记，不要对调相线。
+直桨 MSC 54x20 / MSC 57x20。左旋 15 N·m、右旋 25 N·m。调试先卸桨。禁止换非配套桨。` },
+  { id: "h13-protect", cat: "SAFETY", title: "H13MD 保护与告警", body:
+`无低压保护、无过温停转。
+上电 30~130 V 才能自检。堵转关输出并尝试重启。
+过流约 360 A。油门丢失立即关输出。
+MOS>110℃ 或电容>100℃ 只告警不停转。` },
+  { id: "h13-thrust", cat: "MATCHING", title: "H13MD 拉力对照", body:
+`海平面 / 仅供参考，完整表见官网
+
+54x20 24S  55%  45.1 kg   71.8 A   6.8 g/W
+54x20 24S 100% 107.0 kg  273.6 A   4.2 g/W
+57x20 24S  52%  45.4 kg   68.9 A   7.2 g/W
+57x20 24S 100% 112.6 kg  284.5 A   4.3 g/W
+
+推荐 45 kg。110/113 kg 不是额定载荷。电调持续 60 A。` },
+  { id: "h13-caution", cat: "SAFETY", title: "H13MD 使用注意", body:
+`工业非载人。-40~65℃。IP35。必须原厂桨。禁止超载。禁止私拆。转向看出厂标记。落地后先别摸，很烫。地面测试不要带桨。` }
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -251,8 +331,8 @@ function openDevice(id) {
     ${specTable(d.specs)}
     <p class="note">${d.notes}</p>
     <p><a href="${d.url}" target="_blank" rel="noopener">打开官方资料</a>
-    · <a href="${SPEC}" target="_blank" rel="noopener">技术参数 PDF</a>
-    · <a href="${MANUAL}" target="_blank" rel="noopener">说明书 PDF</a></p>`;
+    · <a href="${d.spec || SPEC}" target="_blank" rel="noopener">技术参数 PDF</a>
+    · <a href="${d.manual || MANUAL}" target="_blank" rel="noopener">说明书 PDF</a></p>`;
   showPage("detail");
 }
 
