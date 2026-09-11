@@ -156,7 +156,7 @@ private fun DeviceListScreen(nav: NavHostController, vm: CatalogViewModel = view
             title = {
                 Column {
                     Text("MyKnow", fontWeight = FontWeight.SemiBold)
-                    Text("好盈 / 思翼 / 云卓 / GNSS / CUAV 资料", style = MaterialTheme.typography.bodySmall)
+                    Text("好盈 / 思翼 / 云卓 / GNSS / CUAV / 北醒 资料", style = MaterialTheme.typography.bodySmall)
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Ink),
@@ -397,7 +397,7 @@ private fun SearchScreen(nav: NavHostController, vm: SearchViewModel = viewModel
             value = query,
             onValueChange = vm::onQueryChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("搜 H13、H150、X7、V6X、A8、UM982…") },
+            placeholder = { Text("搜 H13、H150、X7、TF02、TF03、A8…") },
             leadingIcon = { Icon(Icons.Outlined.Search, null) },
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(),

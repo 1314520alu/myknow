@@ -5,7 +5,7 @@ import com.myknow.app.data.model.Article
 import com.myknow.app.data.model.Device
 import com.myknow.app.data.model.SpecField
 
-/** Official Hobbywing, SIYI, Skydroid, Unicore, u-blox and CUAV field-lookup seed. */
+/** Official Hobbywing, SIYI, Skydroid, Unicore, u-blox, CUAV and Benewake field-lookup seed. */
 object SeedData {
     private const val T0 = 1_720_000_000_000L
     const val PRODUCT_PAGE = "https://www.hobbywing.com/products/h15-plus-new"
@@ -51,6 +51,17 @@ object SeedData {
     const val CUAV_V6X = "https://doc.cuav.net/controller/pixhawk-v6x/en/"
     const val CUAV_V6X_V1 = "https://doc.cuav.net/controller/pixhawk-v6x/en/pixhawk-v6x.html"
     const val CUAV_V6X_PX4 = "https://docs.px4.io/main/en/flight_controller/cuav_pixhawk_v6x.html"
+    const val BENEWAKE = "https://www.benewake.com"
+    const val BENEWAKE_EN = "https://en.benewake.com"
+    const val TF02_PRO = "https://en.benewake.com/TF02Pro/index.html"
+    const val TF02_PRO_ZH = "https://benewake.com/TF02Pro/index.html"
+    const val TF02_PRO_MANUAL = "https://en.benewake.com/uploadfiles/2025/04/20250430175509935.pdf"
+    const val TF02_PRO_I2C_AP = "https://en.benewake.com/uploadfiles/2025/04/20250402114717107.pdf"
+    const val TF03 = "https://en.benewake.com/TF03/index.html"
+    const val TF03_ZH = "https://benewake.com/TF03/index.html"
+    const val TF03_MANUAL = "https://en.benewake.com/uploadfiles/2024/04/20240426134845102.pdf"
+    const val TF03_SPEC = "https://en.benewake.com/uploadfiles/2023/05/20230505181408289.pdf"
+    const val BENEWAKE_AP = "https://ardupilot.org/copter/docs/common-benewake-tf02-lidar.html"
 
     fun devices(): List<Device> = listOf(
         device(
@@ -975,6 +986,111 @@ PX4 $CUAV_V6X_PX4
                 SpecField("相对X7", "有网口、16 PWM、H753+IO"),
             ),
         ),
+        device(
+            id = "benewake-tf02-pro",
+            type = "OTHER",
+            brand = "北醒 Benewake",
+            model = "TF02-Pro 激光雷达",
+            tags = "北醒,Benewake,TF02-Pro,TF02Pro,TF02,LiDAR,测距,定高",
+            datasheetUrl = TF02_PRO_MANUAL,
+            favorite = true,
+            time = T0 + 320,
+            notes = """
+北醒中距单点 ToF。官网品名 TF02-Pro（TF02 升级款）。无人机定高、交通、停车、农业。手册：优化光学与算法，室外强光 / 不同反射率 / 温度更好用。
+
+量程（手册 Table 1-1，90% 白板）：0.1~40 m（0 Klux 与 100 Klux 相同）。10% 反射率：0.1~13.5 m。精度 ±5 cm（0.1~5 m）、±1%（5~40 m）。分辨率 1 cm。帧率 1~1000 Hz，默认 100 Hz（定制帧率按 2000/n，n≥2）。重复性 1σ <2 cm（0.1~35 m @90%）。抗光 100 Klux。IP65。人眼安全 Class1（IEC60825）。波长 850 nm，VCSEL。FOV 理论 3°（实际略偏）。
+
+电：DC 5~12 V，平均 ≤200 mA，峰值 300 mA，功耗 ≤1 W。电平 LVTTL 3.3 V。接口 UART / I²C / I/O。尺寸 69×41.5×26 mm（L×H×W），外壳 PC/ABS。-20~60℃，储存 -30~80℃。重量 50 g（含线），线长 80 cm。插头 JST 1.25-4P（Molex 51021-0400）。
+线序：红 VCC，白 RXD/SDA，绿 TXD/SCL，黑 GND。有反接保护（产品页）。
+
+UART：默认 115200 8N1。I²C：从机，默认地址 0x10，范围 0x01~0x7F，最高 400 kbps；发命令后约等 100 ms 再读。安装 M2.5 圆头十字。先撕镜头保护膜，镜面即测距零点，不要挡、不要用酒精擦。光斑随距离变大（1 m 约 5 cm 边长，40 m 约 208 cm），目标应大于光斑。
+
+飞控：ArduPilot 串口 SERIAL_PROTOCOL=9，波特 115，RNGFND1_TYPE=27（BenewakeTF03，与 TF02-Pro 共用；旧 TF02 才是 19）。北醒 I²C 应用笔记：TYPE=25，ADDR=16（0x10），定高 ORIENT=25，MIN/MAX 按安装与有效量程。Wiki 表把 TF02-Pro 保守写成 0.40~13.5 m（偏 10% 反射率），参数不要按 40 m 满量程写死。PX4 有 Benewake 测距驱动，以当前文档为准。
+不要和 TF02-i（CAN，7~30 V）混料。
+
+产品页 $TF02_PRO
+中文页 $TF02_PRO_ZH
+手册 $TF02_PRO_MANUAL
+I²C+ArduPilot $TF02_PRO_I2C_AP
+ArduPilot $BENEWAKE_AP
+            """.trimIndent(),
+            specs = listOf(
+                SpecField("产品型号", "TF02-Pro"),
+                SpecField("原理", "ToF 单点"),
+                SpecField("量程@90%", "0.1~40", "m"),
+                SpecField("量程@10%", "0.1~13.5", "m"),
+                SpecField("精度", "±5 cm（≤5 m）/ ±1%（5~40 m）"),
+                SpecField("分辨率", "1", "cm"),
+                SpecField("帧率", "1~1000（默认 100）", "Hz"),
+                SpecField("FOV", "3", "°"),
+                SpecField("波长", "850 nm VCSEL / Class1"),
+                SpecField("接口", "UART / I²C / I/O"),
+                SpecField("UART", "115200 8N1"),
+                SpecField("I²C", "从机 0x10 / ≤400 kbps"),
+                SpecField("电压", "DC 5~12", "V"),
+                SpecField("功耗", "≤1", "W"),
+                SpecField("防护", "IP65"),
+                SpecField("尺寸", "69×41.5×26", "mm"),
+                SpecField("重量(含线)", "50", "g"),
+                SpecField("线长", "80", "cm"),
+                SpecField("温度", "-20~60", "℃"),
+                SpecField("手册", TF02_PRO_MANUAL),
+            ),
+        ),
+        device(
+            id = "benewake-tf03",
+            type = "OTHER",
+            brand = "北醒 Benewake",
+            model = "TF03 激光雷达（100 / 180）",
+            tags = "北醒,Benewake,TF03,TF03-180,TF03-100,LiDAR,测距,CAN",
+            datasheetUrl = TF03_MANUAL,
+            favorite = true,
+            time = T0 + 315,
+            notes = """
+北醒第三代长距单点脉冲 ToF。官网 SKU：TF03-100 与 TF03-180，手册写二者只差最大量程。用户说 TF03 时现场多是 180 m 款，买料先看丝印/订单。铝合金壳 + 红外透过玻璃，IP67。另有无外壳定制（约 10 g / 31.0×30.2×19.2 mm），参数问北醒，本条不记。
+
+量程（UART/CAN 手册 Table 2，90% / 10% × 0 klux / 100 klux；斜杠为 100 款 / 180 款）：
+• 90% 0 klux：0.1~100 m / 0.1~180 m
+• 10% 0 klux：0.1~40 m / 0.1~70 m
+• 90% 100 klux：0.1~80 m / 0.1~130 m
+• 10% 100 klux：0.1~30 m / 0.1~50 m
+精度 ±10 cm（10 m 内）、1%（10 m 以外）。分辨率 1 cm。帧率 1~1000 Hz，默认约 100 Hz（须满足手册公式，否则回 100 Hz）。重复性 1σ <3 cm。光源 LD，905 nm，Class1（EN60825）。FOV 水平 0.5°、垂直 0.15°（理论值）。抗光 100 kLux。
+
+电：5~24 V DC。平均电流 ≤150 mA@5 V / ≤80 mA@12 V / ≤50 mA@24 V。功耗 ≤1 W。过压保护 300 V，反接 200 V。LVTTL 3.3 V。标准版 UART/CAN（默认 UART，二者不能同时出数，命令切换）。另有 RS485/RS232 版。尺寸 44×43×32 mm。重量手册表 86 / 89 / 92 g。线长 70 cm。Molex SD-51021-007 / MH1.25-7P。-25~60℃，储存 -40~85℃。
+线序：红 5~24 V，白 CAN_L，绿 CAN_H，蓝 UART RX，棕 UART TX，黑 GND。UART 115200 8N1。CAN 默认 1 Mbps，收 ID 0x3003，发 ID 0x03，标准帧。
+
+现场：勿挡窗口；雨雾烟、同波长强光、凝露、高压水枪、剧烈振动会失效。可选自清洁 / 瞄准光模块。
+飞控：UART 与 TF02-Pro 相同套路，TYPE=27。CAN：CAN_Px_DRIVER=1，CAN_Dx_PROTOCOL=11（Benewake），TYPE=34。Wiki 保守表写 TF03 1~50 m，定高 MIN/MAX 按工况留余量，不要按 180 m 满量程。PX4 以当前 Benewake 驱动说明为准。
+
+产品页 $TF03
+中文页 $TF03_ZH
+手册 $TF03_MANUAL
+规格 PDF $TF03_SPEC
+ArduPilot $BENEWAKE_AP
+            """.trimIndent(),
+            specs = listOf(
+                SpecField("产品型号", "TF03-100 / TF03-180"),
+                SpecField("原理", "脉冲 ToF 单点"),
+                SpecField("量程@90% 0klux", "100 / 180", "m"),
+                SpecField("量程@10% 100klux", "30 / 50", "m"),
+                SpecField("精度", "±10 cm（≤10 m）/ 1%（>10 m）"),
+                SpecField("分辨率", "1", "cm"),
+                SpecField("帧率", "1~1000（默认约 100）", "Hz"),
+                SpecField("FOV", "水平 0.5° / 垂直 0.15°"),
+                SpecField("波长", "905 nm LD / Class1"),
+                SpecField("接口", "UART / CAN（默认同 UART；另有 485/232 版）"),
+                SpecField("UART", "115200 8N1"),
+                SpecField("CAN", "默认 1 Mbps / TX 0x03 / RX 0x3003"),
+                SpecField("电压", "DC 5~24", "V"),
+                SpecField("功耗", "≤1", "W"),
+                SpecField("防护", "IP67"),
+                SpecField("尺寸", "44×43×32", "mm"),
+                SpecField("重量", "86~92", "g"),
+                SpecField("线长", "70", "cm"),
+                SpecField("温度", "-25~60", "℃"),
+                SpecField("手册", TF03_MANUAL),
+            ),
+        ),
     )
 
     fun articles(): List<Article> = listOf(
@@ -1427,6 +1543,36 @@ PWM / 遥控
 • X7 / X7 Pro：ArduPilot CUAV-X7（bdshot 另文件夹）。
 • V6X V1：Pixhawk6X / px4_fmu-v6x。V6X V2：CUAV-V6X-v2 / cuav_fmu-v6x。V1/V2 互不兼容。
 • 先对板型再写参。以太网只在 V6X：任务机、网口相机走 ETH，飞控 TELEM 仍给数传。
+            """.trimIndent(),
+        ),
+        Article(
+            id = "tf02-tf03-compare",
+            title = "TF02-Pro vs TF03：定高怎么选",
+            category = "MATCHING",
+            tags = "北醒,TF02-Pro,TF03,TF03-180,LiDAR",
+            favorite = true,
+            createdAt = T0 + 110,
+            updatedAt = T0 + 110,
+            body = """
+都是北醒单点 ToF，不是扫描雷达。定高、避障看量程和接口，不要按型号数字硬选。
+
+TF02-Pro（中距）
+• 手册 0.1~40 m @90%；10% 反射只到 13.5 m
+• UART / I²C / I/O，5~12 V，IP65，约 50 g（含线），FOV 3°
+• 定高、植保、车位够用。I²C 可挂多只（改地址）
+
+TF03-100 / TF03-180（长距）
+• 180 款 90% 0 klux 到 180 m；强光 10% 只到 50 m
+• UART 或 CAN（不能同时），5~24 V，IP67，约 86~92 g，FOV 0.5°
+• 需要 CAN、更高防护、更远测距时用。先确认是 100 还是 180
+
+ArduPilot（官网 wiki + 北醒笔记）
+• 串口：PROTOCOL=9，115200，TYPE=27（TF02-Pro 与 TF03）
+• TF02-Pro I²C：TYPE=25，ADDR=16
+• TF03 CAN：PROTOCOL=11，TYPE=34
+• MIN/MAX 按可靠读数，Wiki 对 TF02-Pro / TF03 写得比手册满量程保守
+
+安装：镜头干净、目标大于光斑、向下定高 ORIENT=25。雨雾、玻璃、水面、同波长干扰会漂。
             """.trimIndent(),
         ),
     )

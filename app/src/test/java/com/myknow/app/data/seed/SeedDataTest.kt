@@ -148,4 +148,41 @@ class SeedDataTest {
         assertTrue(articleIds.contains("cuav-fc-wiring"))
         assertTrue(SeedData.articles().any { it.id == "cuav-fc-wiring" && it.tags.contains("V6X") })
     }
+
+    @Test
+    fun includesBenewakeLidars() {
+        val ids = SeedData.devices().map { it.id }
+        assertTrue(ids.contains("benewake-tf02-pro"))
+        assertTrue(ids.contains("benewake-tf03"))
+
+        val tf02 = SeedData.devices().first { it.id == "benewake-tf02-pro" }
+        assertTrue(tf02.type == "OTHER")
+        assertTrue(tf02.brand.contains("北醒"))
+        assertTrue(tf02.model.contains("TF02-Pro"))
+        assertTrue(tf02.tags.contains("TF02-Pro"))
+        assertTrue(tf02.notes.contains("0.1~40"))
+        assertTrue(tf02.notes.contains("13.5"))
+        assertTrue(tf02.notes.contains("UART"))
+        assertTrue(tf02.notes.contains("I²C") || tf02.notes.contains("I2C"))
+        assertTrue(tf02.specsJson.contains("IP65"))
+        assertTrue(tf02.specsJson.contains("5~12"))
+        assertFalse(tf02.notes.contains("180 m"))
+
+        val tf03 = SeedData.devices().first { it.id == "benewake-tf03" }
+        assertTrue(tf03.type == "OTHER")
+        assertTrue(tf03.model.contains("TF03"))
+        assertTrue(tf03.tags.contains("TF03-180"))
+        assertTrue(tf03.notes.contains("TF03-100"))
+        assertTrue(tf03.notes.contains("TF03-180"))
+        assertTrue(tf03.notes.contains("UART"))
+        assertTrue(tf03.notes.contains("CAN"))
+        assertTrue(tf03.notes.contains("IP67"))
+        assertTrue(tf03.specsJson.contains("5~24"))
+        assertTrue(tf03.specsJson.contains("180"))
+
+        val article = SeedData.articles().first { it.id == "tf02-tf03-compare" }
+        assertTrue(article.tags.contains("TF02-Pro"))
+        assertTrue(article.tags.contains("TF03"))
+        assertTrue(article.body.contains("TYPE=27"))
+    }
 }
