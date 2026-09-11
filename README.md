@@ -1,6 +1,6 @@
 # MyKnow 无人机资料库
 
-查阅好盈 **H15 Plus / H15MD Plus** 参数、接线、保护和拉力对照。
+查阅好盈 **H13MD** / **H15 Plus** / **H150A FOC**，思翼 **A8 mini / ZR10 / UniRC / MT11**，云卓 **G16 / G20 / H16 / H30**，**UM982** / **ZED-F9P**，CUAV **X7** / **X7 Pro** / **Pixhawk V6X**，以及北醒 **TF02-Pro** / **TF03** 的参数、接线和现场要点。
 
 最低系统：Android 8.0。
 
