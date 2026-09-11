@@ -78,7 +78,7 @@
   <section id="page-list" class="page on">
     <header class="app">
       <h1>MyKnow</h1>
-      <p>好盈 H13MD / H15 Plus 资料</p>
+      <p>好盈 / 思翼 / 云卓 / GNSS / CUAV 资料</p>
     </header>
     <div class="chips" id="chips"></div>
     <div class="list" id="deviceList"></div>
@@ -92,7 +92,7 @@
   <section id="page-search" class="page">
     <header class="app"><h1>搜索</h1></header>
     <div class="list">
-      <input class="search" id="q" placeholder="搜 H13、H15、电调、CAN、拉力…" />
+      <input class="search" id="q" placeholder="搜 H13、H150、X7、V6X、A8、UM982…" />
       <div id="searchHits"></div>
     </div>
   </section>
@@ -118,7 +118,13 @@ const MANUAL = "https://www.hobbywing.com/uploads/file/20260320/723c602bafe0eb4c
 const H13_PRODUCT = "https://www.hobbywing.com/products/h13a";
 const H13_SPEC = "https://www.hobbywing.com/uploads/file/20260309/33612d30c3835d5a4e4e2f36884d6e32.pdf";
 const H13_MANUAL = "https://www.hobbywing.com/en/uploads/file/20250828/680e2e2e8798f49de283d412ff1c6cf6.pdf";
-const TYPES = { PROPULSION: "动力套", ESC: "电调", MOTOR: "电机", PROPELLER: "桨叶" };
+const H150_PRODUCT = "https://www.hobbywing.com/products/xrotor-h150a-24s-foc-v1125";
+const H150_MANUAL = "https://www.hobbywing.com/uploads/file/20250401/e3e501530ee8aaf7f89f7fa32ab60f5c.pdf";
+const CUAV_X7_AP = "https://ardupilot.org/copter/docs/common-cuav-x7-family-overview.html";
+const CUAV_X7_PRO = "https://doc.cuav.net/controller/x7/zh-hans/x7-pro.html";
+const CUAV_V6X = "https://doc.cuav.net/controller/pixhawk-v6x/en/";
+const CUAV_V6X_PX4 = "https://docs.px4.io/main/en/flight_controller/cuav_pixhawk_v6x.html";
+const TYPES = { PROPULSION: "动力套", ESC: "电调", MOTOR: "电机", PROPELLER: "桨叶", CAMERA: "镜头", GPS: "GPS", OTHER: "其他", FLIGHT_CONTROLLER: "飞控" };
 const CATS = { WIRING: "接线与安装", SAFETY: "安全与维护", MATCHING: "选型匹配" };
 
 const devices = [
@@ -213,6 +219,112 @@ const devices = [
     notes: "H13MD 原厂直桨，碳纤维，480±15 g。D40-4×M5，中心孔 D15。左旋 15 N·m / 右旋 25 N·m。必须原厂配套桨。",
     url: H13_PRODUCT, spec: H13_SPEC, manual: H13_MANUAL,
     specs: [["型号", "MSC 57x20"], ["类型", "直桨"], ["重量", "480±15 g"], ["安装", "D40-4×M5，中心孔 D15"], ["扭矩", "左旋 15 / 右旋 25 N·m"]]
+  },
+  {
+    id: "h150-esc", type: "ESC", brand: "好盈 Hobbywing", model: "XRotor Pro H150A 24S FOC",
+    notes: "独立零售 H150 / H150A FOC。官网品名 XRotor Pro H150A 24S FOC。18-24S（54-104.4 V），持续 50 A，峰值 150 A/3s。164×66×38 mm，464 g（不含线），IP55。PWM+CAN，1100-1940 μs，不可校准。DataLinkBox G3。\nH13MD 套装内也叫 H150A FOC，但是 30~130 V / 60 A / 395 g，不要混用参数。",
+    url: H150_PRODUCT, spec: H150_PRODUCT, manual: H150_MANUAL,
+    specs: [
+      ["产品型号", "XRotor Pro H150A 24S FOC"], ["俗称", "H150 / H150A FOC"],
+      ["电压", "18-24S（54-104.4 V）"], ["持续电流", "50 A"], ["峰值", "150 A / 3s"],
+      ["PWM", "1100-1940 μs / 50-500 Hz"], ["油门校准", "不可校准"],
+      ["通讯", "CAN（可定制串口）"], ["调参盒", "DataLinkBox G3"],
+      ["防护", "IP55"], ["尺寸", "164×66×38 mm"], ["重量", "464 g"]
+    ]
+  },
+  {
+    id: "siyi-a8", type: "CAMERA", brand: "思翼 SIYI", model: "A8 mini 4K 云台",
+    notes: "4K 三轴云台。1/1.7\" 8MP，6× 数码变焦。11~25.2 V（早期批次可能不支持 6S）。约 95 g，IP4X。以太网 / HDMI / CVBS。",
+    url: "https://siyi.biz/zh/product/tri-axis-single-camera-gimbal/a8-mini/spec/",
+    specs: [["传感器", "1/1.7\" 8MP"], ["变焦", "6× 数码"], ["电压", "11~25.2 V"], ["重量", "95 g"], ["防护", "IP4X"]]
+  },
+  {
+    id: "siyi-zr10", type: "CAMERA", brand: "思翼 SIYI", model: "ZR10 2K 变焦吊舱",
+    notes: "用户提到 AR10：官网对应 ZR10。10× 光学 / 30× 混合。11~25.2 V，381 g。",
+    url: "https://siyi.biz/zh/product/tri-axis-single-camera-gimbal/zr10/spec/",
+    specs: [["变焦", "10× 光学 / 30× 混合"], ["电压", "11~25.2 V"], ["重量", "381 g"]]
+  },
+  {
+    id: "siyi-unirc7", type: "OTHER", brand: "思翼 SIYI", model: "UniRC 7 / 7 Pro 手持地面站",
+    notes: "7 寸 GCS。Pro 1920×1200 / 约 8 h；标准 1280×800 / 约 11 h。海面约 30~40 km。IP54。",
+    url: "https://siyi.biz/zh/product/hand-gcs/uni-rc7/spec/",
+    specs: [["屏幕", "7 寸 / 1600 nit"], ["距离", "海面约 30~40 km"], ["防护", "IP54"]]
+  },
+  {
+    id: "siyi-unirc10", type: "OTHER", brand: "思翼 SIYI", model: "UniRC 10 Pro 手持地面站",
+    notes: "10.1 寸 1920×1200 / 2000 nit。海面约 35~45 km。2600 g（含腹托）。双电热插拔约 5 h。",
+    url: "https://www.siyi.biz/index.php?asd=1131&id=specs1",
+    specs: [["屏幕", "10.1 寸 / 2000 nit"], ["重量", "2600 g"], ["天空端", "3S~18S"]]
+  },
+  {
+    id: "siyi-mt11", type: "CAMERA", brand: "思翼 SIYI", model: "UniPod MT11 四光 AI 吊舱",
+    notes: "48MP + 11×/165× + 640×512 红外 + 测距 5~1200 m。10~26 V。405±5 g / 含快拆 533.5±5 g。IP54。",
+    url: "https://siyi.biz/en/index.php?id=1058",
+    specs: [["可见光", "48MP / 11× 光学"], ["红外", "640×512"], ["测距", "5~1200 m"], ["电压", "10~26 V"]]
+  },
+  {
+    id: "g16", type: "OTHER", brand: "云卓 Skydroid", model: "G16 手持地面站",
+    notes: "7 寸 1920×1200，Android 13，4+64，20000mAh 约 9~10 h，1.05 kg。天空端 GR01 7.2~72 V。QGC UDP 14551。",
+    url: "https://www.worldronemarket.com/skydroid-g16-user-manual/",
+    specs: [["屏幕", "7 寸 1920×1200"], ["电池", "约 9~10 h"], ["天空端", "GR01 7.2~72 V"]]
+  },
+  {
+    id: "g20", type: "OTHER", brand: "云卓 Skydroid", model: "G20 手持地面站",
+    notes: "海外页：6nm / 7 寸 / 约 30 km / 6~8 h。经销商表另写 8+128、8~12 h、1.2 kg，以说明书为准。",
+    url: "https://skydroidglobal.com/products/skydroid-g20-remote-controller",
+    specs: [["屏幕", "7 寸 1920×1200"], ["距离", "约 30 km"], ["续航", "海外页 6~8 h"]]
+  },
+  {
+    id: "h16", type: "OTHER", brand: "云卓 Skydroid", model: "H16 / H16 Pro 手持地面站",
+    notes: "理想距离 H16≈10 km / Pro≈30 km。1034 g，272×183×94 mm。天空端 R16 7.2~72 V。",
+    url: "https://manual.cuav.net/h16/H16-users-manual.pdf",
+    specs: [["距离", "10 / 30 km 理想"], ["重量", "1034 g"], ["天空端", "R16 7.2~72 V"]]
+  },
+  {
+    id: "h30", type: "OTHER", brand: "云卓 Skydroid", model: "H30 手持地面站",
+    notes: "10.1 寸，骁龙 660，Android 9。800M/1.4G/2.4G。1.5 kg。IP65。天空端 R30 约 65 g。忽略早期 2.24 kg 图纸。",
+    url: "https://www.worldronemarket.com/skydroid-h30-r30/",
+    specs: [["屏幕", "10.1 寸"], ["重量", "1.5 kg"], ["防护", "IP65"]]
+  },
+  {
+    id: "um982", type: "GPS", brand: "和芯星通 Unicore", model: "UM982 全频 RTK 定向模块",
+    notes: "1408 通道，双天线定向 0.1°/1 m。RTK 0.8/1.5 cm+1 ppm。20 Hz。16×21×2.6 mm。供电 3.0~3.6 V。",
+    url: "https://www.unicore.com/products/detail/26",
+    specs: [["RTK平面", "0.8 cm+1 ppm"], ["定向", "0.1°/1 m"], ["供电", "3.0~3.6 V"]]
+  },
+  {
+    id: "f9p", type: "GPS", brand: "u-blox", model: "ZED-F9P 多频 RTK 模块",
+    notes: "单天线厘米级 RTK（0.01 m+1 ppm CEP），最高 20 Hz。航向需两套 F9P / moving base。供电 2.7~3.6 V。",
+    url: "https://www.u-blox.com/en/product/zed-f9p-module",
+    specs: [["RTK", "0.01 m+1 ppm CEP"], ["航向", "单模块无双天线"], ["供电", "2.7~3.6 V"]]
+  },
+  {
+    id: "cuav-x7", type: "FLIGHT_CONTROLLER", brand: "CUAV", model: "X7 飞控",
+    notes: "STM32H743。IMU：BMI088 / ICM-20689 / ICM-20649。RM3100 + MS5611×2。PWM 14（12 DShot）。CAN×2，GPS×2，Power A 模拟 + Power C DroneCAN。101 g。已被 X7+ 替代，仍记第一代。",
+    url: CUAV_X7_AP,
+    specs: [
+      ["MCU", "STM32H743"], ["IMU", "BMI088 / ICM-20689 / ICM-20649"],
+      ["PWM", "14（12 DShot）"], ["CAN", "2"], ["重量", "101 g"], ["固件", "ArduPilot CUAV-X7 / PX4"]
+    ]
+  },
+  {
+    id: "cuav-x7-pro", type: "FLIGHT_CONTROLLER", brand: "CUAV", model: "X7 Pro 飞控",
+    notes: "相对 X7：主 IMU 为车规 ADIS16470，另 BMI088 / ICM-20649。工业减震。2022-01-01 起由 X7+ Pro 替代（X7+ Pro 才有舵机电压监测）。无以太网，相对 V6X 是 14 PWM / H743。",
+    url: CUAV_X7_PRO, spec: CUAV_X7_AP,
+    specs: [
+      ["MCU", "STM32H743"], ["IMU", "ADIS16470 / BMI088 / ICM-20649"],
+      ["PWM", "14"], ["CAN", "2"], ["后继", "X7+ Pro"], ["固件", "ArduPilot CUAV-X7 / PX4"]
+    ]
+  },
+  {
+    id: "cuav-v6x", type: "FLIGHT_CONTROLLER", brand: "CUAV", model: "Pixhawk V6X 飞控",
+    notes: "Pixhawk FMUv6X。STM32H753 + STM32F103 IO。三 IMU 独立供电，100M 以太网，PWM 16。V1/V2 固件不兼容。V1≈99 g；V2 97.9 g，标配 PMU 2 Lite 12~70 V。",
+    url: CUAV_V6X, spec: CUAV_V6X_PX4,
+    specs: [
+      ["MCU", "STM32H753 + IO STM32F103"], ["标准", "FMUv6X"],
+      ["PWM", "16"], ["以太网", "100 Mbps"], ["CAN", "2"],
+      ["固件", "Pixhawk6X / CUAV-V6X-v2"]
+    ]
   }
 ];
 
@@ -281,7 +393,20 @@ MOS>110℃ 或电容>100℃ 只告警不停转。` },
 
 推荐 45 kg。110/113 kg 不是额定载荷。电调持续 60 A。` },
   { id: "h13-caution", cat: "SAFETY", title: "H13MD 使用注意", body:
-`工业非载人。-40~65℃。IP35。必须原厂桨。禁止超载。禁止私拆。转向看出厂标记。落地后先别摸，很烫。地面测试不要带桨。` }
+`工业非载人。-40~65℃。IP35。必须原厂桨。禁止超载。禁止私拆。转向看出厂标记。落地后先别摸，很烫。地面测试不要带桨。` },
+  { id: "siyi-io", cat: "WIRING", title: "思翼云台接线要点（A8 / ZR10 / MT11）", body:
+`控制：S.Bus、UART、以太网。A8 另有 HDMI / CVBS。电压现行 11~25.2 V（MT11 10~26 V），2023 年 6 月前 A8/ZR10 批次可能更窄。UART 接 TELEM，TX/RX 交叉。` },
+  { id: "skydroid-tips", cat: "WIRING", title: "云卓地面站连接要点", body:
+`G16：QGC UDP 14551 / 127.0.0.1:14552，相机 192.168.144.x。H16：UDP 14550。H30：192.168.144.101:14550/14551。对频距离约 50 cm。` },
+  { id: "rtk-tips", cat: "MATCHING", title: "UM982 与 F9P：双天线定向 vs RTK", body:
+`UM982：单模块双天线，1 m 基线约 0.1°，3.0~3.6 V。F9P：单天线厘米级 RTK，航向要两套或换双天线模块，2.7~3.6 V。` },
+  { id: "h150-tips", cat: "MATCHING", title: "H150A FOC：零售款 vs H13MD 套装", body:
+`零售 XRotor Pro H150A 24S FOC：18-24S，50 A，464 g，164×66×38 mm，IP55。
+H13MD 套装 H150A FOC：30~130 V，60 A，395 g，132.5×67.5×37.4 mm。不要混用参数。PWM 1100-1940，不可校准。DataLinkBox G3。` },
+  { id: "cuav-wiring", cat: "WIRING", title: "CUAV 飞控接线要点（X7 / X7 Pro / V6X）", body:
+`飞控只吃 5 V PMU。X7：Power A 模拟，Power C DroneCAN。V6X：POWER C1/C2 推荐 DroneCAN。
+双 CAN 两端 120 Ω，好盈电调常无终端电阻。GPS1 含安全开关。CRSF/ELRS 走 UART 不走 RCIN。
+V6X V1/V2 固件不兼容。以太网只在 V6X。` }
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -294,7 +419,7 @@ function showPage(name) {
 }
 
 function renderChips() {
-  const keys = ["", "PROPULSION", "ESC", "MOTOR", "PROPELLER"];
+  const keys = ["", "PROPULSION", "ESC", "MOTOR", "PROPELLER", "FLIGHT_CONTROLLER", "CAMERA", "GPS", "OTHER"];
   $("chips").innerHTML = keys.map((key) =>
     `<button class="chip ${filter === key ? "on" : ""}" data-type="${key}">${key ? TYPES[key] : "全部"}</button>`
   ).join("");
@@ -330,9 +455,7 @@ function openDevice(id) {
     <div class="kicker">${d.brand} · ${TYPES[d.type]}</div>
     ${specTable(d.specs)}
     <p class="note">${d.notes}</p>
-    <p><a href="${d.url}" target="_blank" rel="noopener">打开官方资料</a>
-    · <a href="${d.spec || SPEC}" target="_blank" rel="noopener">技术参数 PDF</a>
-    · <a href="${d.manual || MANUAL}" target="_blank" rel="noopener">说明书 PDF</a></p>`;
+    <p><a href="${d.url}" target="_blank" rel="noopener">打开官方资料</a>${d.spec ? ` · <a href="${d.spec}" target="_blank" rel="noopener">技术参数</a>` : ""}${d.manual ? ` · <a href="${d.manual}" target="_blank" rel="noopener">说明书</a>` : ""}</p>`;
   showPage("detail");
 }
 

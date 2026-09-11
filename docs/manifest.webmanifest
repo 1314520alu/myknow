@@ -1,7 +1,7 @@
 {
   "name": "MyKnow 资料库",
   "short_name": "MyKnow",
-  "description": "无人机电机电调资料查阅",
+  "description": "无人机动力、飞控、云台与 GNSS 资料查阅",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

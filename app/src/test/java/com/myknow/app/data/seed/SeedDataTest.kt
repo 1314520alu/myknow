@@ -51,4 +51,101 @@ class SeedDataTest {
         assertFalse(esc.notes.contains("110 A"))
         assertFalse(esc.notes.contains("800 A"))
     }
+
+    @Test
+    fun includesSiyiSkydroidGnss() {
+        val ids = SeedData.devices().map { it.id }
+        assertTrue(ids.contains("siyi-a8-mini"))
+        assertTrue(ids.contains("siyi-zr10"))
+        assertTrue(ids.contains("siyi-unirc-7"))
+        assertTrue(ids.contains("siyi-unirc-10-pro"))
+        assertTrue(ids.contains("siyi-unipod-mt11"))
+        assertTrue(ids.contains("skydroid-g16"))
+        assertTrue(ids.contains("skydroid-g20"))
+        assertTrue(ids.contains("skydroid-h16"))
+        assertTrue(ids.contains("skydroid-h30"))
+        assertTrue(ids.contains("unicore-um982"))
+        assertTrue(ids.contains("ublox-zed-f9p"))
+
+        val zr10 = SeedData.devices().first { it.id == "siyi-zr10" }
+        assertTrue(zr10.tags.contains("AR10"))
+        assertTrue(zr10.notes.contains("ZR10"))
+        assertTrue(zr10.type == "CAMERA")
+
+        val um982 = SeedData.devices().first { it.id == "unicore-um982" }
+        assertTrue(um982.type == "GPS")
+        assertTrue(um982.notes.contains("0.8 cm"))
+        assertTrue(um982.notes.contains("双天线"))
+
+        val f9p = SeedData.devices().first { it.id == "ublox-zed-f9p" }
+        assertTrue(f9p.type == "GPS")
+        assertTrue(f9p.notes.contains("单天线"))
+        assertTrue(f9p.notes.contains("2.7~3.6"))
+        assertTrue(f9p.tags.contains("F9P"))
+
+        val articleIds = SeedData.articles().map { it.id }
+        assertTrue(articleIds.contains("skydroid-gcs-tips"))
+        assertTrue(articleIds.contains("um982-f9p-rtk"))
+        assertTrue(articleIds.contains("siyi-gimbal-io"))
+    }
+
+    @Test
+    fun includesHobbywingH150Esc() {
+        val esc = SeedData.devices().first { it.id == "hobbywing-h150a-foc" }
+        assertTrue(esc.type == "ESC")
+        assertTrue(esc.favorite)
+        assertTrue(esc.model.contains("H150A"))
+        assertTrue(esc.tags.contains("H150"))
+        assertTrue(esc.tags.contains("H150A"))
+        assertTrue(esc.notes.contains("XRotor Pro H150A 24S FOC"))
+        assertTrue(esc.notes.contains("18-24S"))
+        assertTrue(esc.notes.contains("50 A"))
+        assertTrue(esc.notes.contains("464"))
+        assertTrue(esc.notes.contains("164×66×38"))
+        assertTrue(esc.notes.contains("DataLinkBox G3"))
+        assertTrue(esc.notes.contains("H13MD"))
+        assertTrue(esc.specsJson.contains("XRotor Pro H150A 24S FOC"))
+        assertFalse(esc.notes.contains("36~130"))
+
+        val kitEsc = SeedData.devices().first { it.id == "hobbywing-h13md-esc" }
+        assertTrue(kitEsc.notes.contains("XRotor Pro H150A 24S FOC"))
+        assertTrue(kitEsc.notes.contains("60 A"))
+        assertFalse(kitEsc.notes.contains("50 A（散热良好）"))
+
+        assertTrue(SeedData.articles().any { it.id == "h150-foc-tips" && it.tags.contains("H150") })
+    }
+
+    @Test
+    fun includesCuavFlightControllers() {
+        val ids = SeedData.devices().map { it.id }
+        assertTrue(ids.contains("cuav-x7"))
+        assertTrue(ids.contains("cuav-x7-pro"))
+        assertTrue(ids.contains("cuav-v6x"))
+
+        val x7 = SeedData.devices().first { it.id == "cuav-x7" }
+        assertTrue(x7.type == "FLIGHT_CONTROLLER")
+        assertTrue(x7.notes.contains("STM32H743"))
+        assertTrue(x7.notes.contains("BMI088"))
+        assertTrue(x7.notes.contains("ICM-20649"))
+        assertTrue(x7.specsJson.contains("STM32H743"))
+        assertFalse(x7.notes.contains("ADIS16470"))
+
+        val pro = SeedData.devices().first { it.id == "cuav-x7-pro" }
+        assertTrue(pro.type == "FLIGHT_CONTROLLER")
+        assertTrue(pro.notes.contains("ADIS16470"))
+        assertTrue(pro.notes.contains("X7+ Pro"))
+        assertTrue(pro.tags.contains("X7 Pro"))
+
+        val v6x = SeedData.devices().first { it.id == "cuav-v6x" }
+        assertTrue(v6x.type == "FLIGHT_CONTROLLER")
+        assertTrue(v6x.notes.contains("STM32H753"))
+        assertTrue(v6x.notes.contains("FMUv6X"))
+        assertTrue(v6x.notes.contains("100"))
+        assertTrue(v6x.notes.contains("以太网") || v6x.specsJson.contains("100 Mbps"))
+        assertTrue(v6x.notes.contains("CUAV-V6X-v2") || v6x.notes.contains("Pixhawk6X"))
+
+        val articleIds = SeedData.articles().map { it.id }
+        assertTrue(articleIds.contains("cuav-fc-wiring"))
+        assertTrue(SeedData.articles().any { it.id == "cuav-fc-wiring" && it.tags.contains("V6X") })
+    }
 }
