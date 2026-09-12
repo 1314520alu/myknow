@@ -60,7 +60,7 @@
     .back { background: none; color: var(--foam); border: 0; padding: 0 0 8px; font-size: 15px; cursor: pointer; }
     .nav {
       position: fixed; left: 0; right: 0; bottom: 0;
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
       background: var(--raised); padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
     }
     .nav button { background: transparent; color: var(--mist); }
@@ -78,10 +78,15 @@
   <section id="page-list" class="page on">
     <header class="app">
       <h1>MyKnow</h1>
-      <p>好盈 H15 Plus 资料</p>
+      <p>电机电调与吊舱资料</p>
     </header>
     <div class="chips" id="chips"></div>
     <div class="list" id="deviceList"></div>
+  </section>
+
+  <section id="page-video" class="page">
+    <header class="app"><h1>视频源</h1><p>ZR10 出图地址，App 里点开即可拉流</p></header>
+    <div class="list" id="videoList"></div>
   </section>
 
   <section id="page-docs" class="page">
@@ -107,6 +112,7 @@
 
   <nav class="nav">
     <button type="button" data-tab="list" class="on">器件</button>
+    <button type="button" data-tab="video">视频</button>
     <button type="button" data-tab="docs">文档</button>
     <button type="button" data-tab="search">搜索</button>
   </nav>
@@ -115,8 +121,10 @@
 const PRODUCT = "https://www.hobbywing.com/products/h15-plus-new";
 const SPEC = "https://www.hobbywing.com/uploads/file/20260228/a87197efd698c80fd69797af9c3ce88d.pdf";
 const MANUAL = "https://www.hobbywing.com/uploads/file/20260320/723c602bafe0eb4c9c582b5bef198b8e.pdf";
-const TYPES = { PROPULSION: "动力套", ESC: "电调", MOTOR: "电机", PROPELLER: "桨叶" };
+const TYPES = { PROPULSION: "动力套", ESC: "电调", MOTOR: "电机", PROPELLER: "桨叶", CAMERA: "相机" };
 const CATS = { WIRING: "接线与安装", SAFETY: "安全与维护", MATCHING: "选型匹配" };
+const ZR10_PAGE = "https://siyi.biz/en/product/tri-axis-single-camera-gimbal/zr10/";
+const ZR10_MANUAL = "https://siyi.biz/siyi_file/ZR10/ZR10%20User%20Manual%20v1.7.pdf";
 
 const devices = [
   {
@@ -124,6 +132,7 @@ const devices = [
     model: "H15MD Plus（原 H15 Plus）",
     notes: "现名 H15MD Plus，原品名 H15 Plus。行业共轴一体动力。料号 HW-SMC819DUL00。\n单轴推荐起飞重量 80 kg，最大拉力 195 kg（海平面，只作机动/抗风冗余）。适配 24S~28S LiPo，额定 24S-92V / 28S-108V，输入 36~130 V。IPX6，-40~60℃。碳管 Ø80 mm / 壁厚 5 mm。重量 14550±200 g（含线不含桨）。",
     url: PRODUCT,
+    extraLinks: [["技术参数 PDF", SPEC], ["说明书 PDF", MANUAL]],
     specs: [
       ["产品型号", "H15MD Plus-24S"], ["原品名", "H15 Plus"], ["料号", "HW-SMC819DUL00"],
       ["最大拉力", "195 kg"], ["单轴推荐拉力", "80 kg"], ["推荐力效", "7.5 g/W"],
@@ -164,7 +173,43 @@ const devices = [
     notes: "原厂折叠桨，1854.8±32 g。D46-4×M6，中心孔 D16。M6×14 / 8 N·m。支持定桨。",
     url: PRODUCT,
     specs: [["型号", "MFC 73x23"], ["类型", "折叠桨"], ["重量", "1854.8±32 g"], ["安装", "D46-4×M6，中心孔 D16"], ["螺丝", "M6×14 / 8 N·m"]]
+  },
+  {
+    id: "zr10", type: "CAMERA", brand: "思翼 SIYI", model: "ZR10 2K 变焦光电吊舱",
+    notes: "三轴增稳变焦吊舱。10 倍光学 / 30 倍混合变焦，2K 录像，星光夜视 + HDR。1/2.7 英寸 4 MP CMOS。供电 11~25.2 V（3~6S），381 g。默认 IP 192.168.144.25。",
+    url: ZR10_PAGE,
+    extraLinks: [["说明书 PDF", ZR10_MANUAL]],
+    specs: [
+      ["产品型号", "ZR10"], ["传感器", "1/2.7 英寸 CMOS 4 MP"],
+      ["光学变焦", "10 倍"], ["混合变焦", "30 倍"], ["焦距", "5.2~47.4 mm"],
+      ["光圈", "F1.8~2.5"], ["录像", "2K 2560×1440 @30fps"],
+      ["夜视", "星光 + HDR"], ["偏航", "约 320°"],
+      ["俯仰可控", "−90° ~ +25°"], ["横滚", "−30° ~ +30°"],
+      ["增稳", "±0.01°"], ["视频", "以太网 RTSP"],
+      ["控制", "S.Bus / UART / UDP / TCP"],
+      ["默认IP", "192.168.144.25"],
+      ["RTSP", "rtsp://192.168.144.25:8554/main.264"],
+      ["电压", "11~25.2 V（3~6S）"], ["功耗", "平均 4 W / 峰值 12 W"],
+      ["防护", "IP4X"], ["温度", "−10~50 ℃"],
+      ["尺寸", "121×101×78 mm"], ["重量", "381 g"],
+      ["飞控", "ArduPilot / PX4 MAVLink"]
+    ]
   }
+];
+
+const videoSources = [
+  {
+    id: "zr10-main",
+    name: "SIYI ZR10 主码流",
+    url: "rtsp://192.168.144.25:8554/main.264",
+    note: "默认视频源。手机和吊舱同一网段 192.168.144.x。浏览器不能直接播 RTSP，请用 App「视频」页拉流。",
+  },
+  {
+    id: "zr10-cam2",
+    name: "SIYI ZR10 相机2",
+    url: "rtsp://192.168.144.26:8554/main.264",
+    note: "双吊舱第二路，对应 SIYI FPV 的 Camera 2。",
+  },
 ];
 
 const articles = [
@@ -201,7 +246,18 @@ MOS>110℃ 或电容>100℃ 只告警不停转。` },
 
 推荐 80 kg ≈ 58%~60% 油门。195 kg 不是额定载荷。` },
   { id: "caution", cat: "SAFETY", title: "H15 Plus 使用注意", body:
-`工业非载人。-40~60℃。必须原厂桨。禁止超载。禁止私拆。落地后先别摸，很烫。地面测试不要带桨。` }
+`工业非载人。-40~60℃。必须原厂桨。禁止超载。禁止私拆。落地后先别摸，很烫。地面测试不要带桨。` },
+  { id: "zr10-io", cat: "WIRING", title: "SIYI ZR10 接线、IP 与控制", body:
+`供电 11~25.2 V（3S~6S）。2023 年 6 月前批次多为 11~16.5 V，上 6S 先确认。
+平均约 4 W，峰值约 12 W。电源和网线要软，别扯云台。
+
+视频
+• 默认 IP：192.168.144.25
+• RTSP：rtsp://192.168.144.25:8554/main.264
+• 无图先 ping 192.168.144.25。以太网 RX+/RX− 不要交叉
+
+控制：S.Bus、UART（SDK / MAVLink）、以太网 UDP/TCP。
+兼容 ArduPilot / PX4。倒装、机头安装可用。禁止拆云台、禁止加额外负载。` }
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -214,7 +270,7 @@ function showPage(name) {
 }
 
 function renderChips() {
-  const keys = ["", "PROPULSION", "ESC", "MOTOR", "PROPELLER"];
+  const keys = ["", "PROPULSION", "ESC", "MOTOR", "PROPELLER", "CAMERA"];
   $("chips").innerHTML = keys.map((key) =>
     `<button class="chip ${filter === key ? "on" : ""}" data-type="${key}">${key ? TYPES[key] : "全部"}</button>`
   ).join("");
@@ -228,6 +284,16 @@ function renderDevices() {
       <h2>${d.model}</h2>
       <p>${d.notes.split("\n")[0]}</p>
     </button>`).join("");
+}
+
+function renderVideos() {
+  $("videoList").innerHTML = videoSources.map((s) => `
+    <div class="card">
+      <div class="kicker">视频源</div>
+      <h2>${s.name}</h2>
+      <p>${s.url}</p>
+      <p>${s.note}</p>
+    </div>`).join("");
 }
 
 function renderDocs() {
@@ -250,9 +316,9 @@ function openDevice(id) {
     <div class="kicker">${d.brand} · ${TYPES[d.type]}</div>
     ${specTable(d.specs)}
     <p class="note">${d.notes}</p>
-    <p><a href="${d.url}" target="_blank" rel="noopener">打开官方资料</a>
-    · <a href="${SPEC}" target="_blank" rel="noopener">技术参数 PDF</a>
-    · <a href="${MANUAL}" target="_blank" rel="noopener">说明书 PDF</a></p>`;
+    <p><a href="${d.url}" target="_blank" rel="noopener">打开官方资料</a>${
+      (d.extraLinks || []).map(([name, href]) => ` · <a href="${href}" target="_blank" rel="noopener">${name}</a>`).join("")
+    }</p>`;
   showPage("detail");
 }
 
@@ -295,6 +361,7 @@ $("q").addEventListener("input", (e) => search(e.target.value));
 
 renderChips();
 renderDevices();
+renderVideos();
 renderDocs();
 
 let deferredPrompt = null;

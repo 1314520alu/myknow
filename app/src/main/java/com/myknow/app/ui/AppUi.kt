@@ -27,6 +27,7 @@ import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,12 +79,15 @@ import com.myknow.app.ui.theme.InkRaised
 
 private object Routes {
     const val DEVICES = "devices"
+    const val VIDEO = "video"
     const val DOCS = "docs"
     const val SEARCH = "search"
     const val DEVICE = "device/{id}"
     const val DOC = "doc/{id}"
+    const val PLAYER = "player/{id}"
     fun device(id: String) = "device/$id"
     fun doc(id: String) = "doc/$id"
+    fun player(id: String) = "player/$id"
 }
 
 @Composable
@@ -91,7 +95,7 @@ fun MyKnowAppRoot() {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route.orEmpty()
-    val showBar = route == Routes.DEVICES || route == Routes.DOCS || route == Routes.SEARCH
+    val showBar = route == Routes.DEVICES || route == Routes.DOCS || route == Routes.SEARCH || route == Routes.VIDEO
 
     Scaffold(
         containerColor = Ink,
@@ -103,6 +107,12 @@ fun MyKnowAppRoot() {
                         onClick = { nav.navigate(Routes.DEVICES) { launchSingleTop = true } },
                         icon = { Icon(Icons.Outlined.Inventory2, contentDescription = null) },
                         label = { Text("器件") },
+                    )
+                    NavigationBarItem(
+                        selected = route == Routes.VIDEO,
+                        onClick = { nav.navigate(Routes.VIDEO) { launchSingleTop = true } },
+                        icon = { Icon(Icons.Outlined.Videocam, contentDescription = null) },
+                        label = { Text("视频") },
                     )
                     NavigationBarItem(
                         selected = route == Routes.DOCS,
@@ -122,10 +132,11 @@ fun MyKnowAppRoot() {
     ) { padding ->
         NavHost(
             navController = nav,
-            startDestination = Routes.DEVICES,
+            startDestination = Routes.VIDEO,
             modifier = Modifier.padding(padding),
         ) {
             composable(Routes.DEVICES) { DeviceListScreen(nav) }
+            composable(Routes.VIDEO) { VideoSourceListScreen(nav) }
             composable(Routes.DOCS) { DocListScreen(nav) }
             composable(Routes.SEARCH) { SearchScreen(nav) }
             composable(
@@ -139,6 +150,12 @@ fun MyKnowAppRoot() {
                 arguments = listOf(navArgument("id") { type = NavType.StringType }),
             ) { entry ->
                 DocDetailScreen(entry.arguments?.getString("id").orEmpty(), nav)
+            }
+            composable(
+                Routes.PLAYER,
+                arguments = listOf(navArgument("id") { type = NavType.StringType }),
+            ) { entry ->
+                VideoPlayerScreen(entry.arguments?.getString("id").orEmpty(), nav)
             }
         }
     }
@@ -156,7 +173,7 @@ private fun DeviceListScreen(nav: NavHostController, vm: CatalogViewModel = view
             title = {
                 Column {
                     Text("MyKnow", fontWeight = FontWeight.SemiBold)
-                    Text("好盈 H15 Plus 资料", style = MaterialTheme.typography.bodySmall)
+                    Text("无人机器件资料", style = MaterialTheme.typography.bodySmall)
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Ink),
@@ -172,7 +189,8 @@ private fun DeviceListScreen(nav: NavHostController, vm: CatalogViewModel = view
                 colors = FilterChipDefaults.filterChipColors(),
             )
             DeviceType.entries.filter { type ->
-                devices.any { it.type == type.name } || type.name in setOf("PROPULSION", "MOTOR", "ESC", "PROPELLER")
+                devices.any { it.type == type.name } ||
+                    type.name in setOf("PROPULSION", "MOTOR", "ESC", "PROPELLER", "CAMERA")
             }.distinct().forEach { type ->
                 FilterChip(
                     selected = selected == type.name,

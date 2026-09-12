@@ -11,6 +11,8 @@ object SeedData {
     const val PRODUCT_PAGE = "https://www.hobbywing.com/products/h15-plus-new"
     const val SPEC_PDF = "https://www.hobbywing.com/uploads/file/20260228/a87197efd698c80fd69797af9c3ce88d.pdf"
     const val MANUAL_PDF = "https://www.hobbywing.com/uploads/file/20260320/723c602bafe0eb4c9c582b5bef198b8e.pdf"
+    const val SIYI_ZR10_PAGE = "https://siyi.biz/en/product/tri-axis-single-camera-gimbal/zr10/"
+    const val SIYI_ZR10_MANUAL = "https://siyi.biz/siyi_file/ZR10/ZR10%20User%20Manual%20v1.7.pdf"
 
     fun devices(): List<Device> = listOf(
         device(
@@ -188,6 +190,71 @@ H15MD Plus 原厂折叠桨。碳纤维复合材料。重量 1854.8±32 g。
                 SpecField("螺丝", "M6×14 / 8 N·m"),
             ),
         ),
+        device(
+            id = "siyi-zr10",
+            type = "CAMERA",
+            brand = "思翼 SIYI",
+            model = "ZR10 2K 变焦光电吊舱",
+            tags = "ZR10,云台,变焦,2K,星光,以太网",
+            datasheetUrl = SIYI_ZR10_PAGE,
+            favorite = true,
+            time = T0 + 80,
+            notes = """
+思翼 ZR10：三轴增稳变焦光电吊舱。10 倍光学 / 30 倍混合变焦，2K 录像拍照，星光夜视 + HDR。
+传感器 1/2.7 英寸 CMOS，有效像素 4 MP。适合多旋翼、垂起、无人车/船。
+
+云台：偏航约 320°，俯仰可控约 −90° ~ +25°，横滚约 −30° ~ +30°。增稳精度 ±0.01°。FOC 电机。
+支持倒装、机头安装（与水平面约 90° 时自动进 Nose Mode）。模式：Follow / FPV / Lock。
+可选外挂 SIYI AI 跟踪模块。兼容 ArduPilot / PX4（MAVLink）。
+
+供电 11~25.2 V（3S~6S）。2023 年 6 月前批次多为 11~16.5 V，上 6S 前先确认。平均约 4 W，峰值约 12 W。
+尺寸 121×101×78 mm，重量 381 g，防护 IP4X，工作温度 −10~50 ℃。
+
+视频走以太网。默认 IP 192.168.144.25。RTSP：rtsp://192.168.144.25:8554/main.264
+控制：S.Bus、UART（Gimbal SDK / MAVLink）、以太网 UDP/TCP。
+TF：Class 10，手册 v1.5 写最大 32 GB；升级固件前格式化 FAT32。码流约 12 Mbps（H.265），照片 JPG，视频 MP4。
+
+产品页
+$SIYI_ZR10_PAGE
+
+说明书
+$SIYI_ZR10_MANUAL
+            """.trimIndent(),
+            specs = listOf(
+                SpecField("产品型号", "ZR10"),
+                SpecField("类型", "三轴变焦光电吊舱"),
+                SpecField("传感器", "1/2.7 英寸 CMOS 4 MP"),
+                SpecField("光学变焦", "10", "倍"),
+                SpecField("混合变焦", "30", "倍"),
+                SpecField("焦距", "5.2~47.4 ±5%", "mm"),
+                SpecField("光圈", "F1.8~2.5"),
+                SpecField("视场(广角)", "对角 79.5° / 水平 71.5°"),
+                SpecField("视场(10倍)", "对角 7.7° / 水平 6.7°"),
+                SpecField("录像", "2K 2560×1440 @30fps"),
+                SpecField("备选分辨率", "1080p / 720p @30fps"),
+                SpecField("拍照", "2K JPEG"),
+                SpecField("码流", "12 Mbps H.265"),
+                SpecField("最近对焦", "200", "mm"),
+                SpecField("夜视", "星光 CMOS + HDR"),
+                SpecField("偏航", "约 320°"),
+                SpecField("俯仰可控", "−90° ~ +25°"),
+                SpecField("横滚", "−30° ~ +30°"),
+                SpecField("增稳精度", "±0.01", "°"),
+                SpecField("视频接口", "以太网 RTSP"),
+                SpecField("控制接口", "S.Bus / UART / UDP / TCP"),
+                SpecField("默认IP", "192.168.144.25"),
+                SpecField("RTSP", "rtsp://192.168.144.25:8554/main.264"),
+                SpecField("工作电压", "11~25.2 V（3~6S）"),
+                SpecField("功耗", "平均 4 W / 峰值 12 W"),
+                SpecField("防护", "IP4X"),
+                SpecField("工作温度", "−10~50", "℃"),
+                SpecField("尺寸", "121×101×78", "mm"),
+                SpecField("重量", "381", "g"),
+                SpecField("飞控", "ArduPilot / PX4 MAVLink"),
+                SpecField("产品页", SIYI_ZR10_PAGE),
+                SpecField("说明书PDF", SIYI_ZR10_MANUAL),
+            ),
+        ),
     )
 
     fun articles(): List<Article> = listOf(
@@ -347,6 +414,41 @@ MOS >110℃ 或电容 >100℃：闪灯并上报，不降功率。持续过温会
 • 降落后面板很烫，不要马上摸。
 • 维修只用原厂件。
 • 地面测试不要带桨。
+            """.trimIndent(),
+        ),
+        Article(
+            id = "zr10-io",
+            title = "SIYI ZR10 接线、IP 与控制",
+            category = "WIRING",
+            tags = "ZR10,以太网,RTSP,UART,S.Bus",
+            favorite = true,
+            createdAt = T0 + 80,
+            updatedAt = T0 + 80,
+            body = """
+供电
+• 11~25.2 V（3S~6S）。2023 年 6 月前批次多为 11~16.5 V，上 6S 先确认
+• 平均约 4 W，峰值约 12 W。电源与以太网、控制线要软，别扯云台
+
+视频
+• 以太网出图。默认 IP：192.168.144.25（第二路相机常用 192.168.144.26）
+• RTSP：rtsp://192.168.144.25:8554/main.264
+• 电脑网关要和吊舱同一网段。无图先 ping 192.168.144.25
+• 可接网口转 HDMI。以太网 RX+/RX− 不要交叉
+
+控制
+• S.Bus：拨轮俯仰/偏航，拨杆变焦，按键拍照录像
+• UART：SIYI Gimbal SDK，或 ArduPilot / PX4 MAVLink
+• 以太网：UDP/TCP 命令、SIYI FPV / QGC 触控
+• 套装有：电源线、以太网线、RJ45 线、Link 一体线、飞控 UART 线、Control Y 线
+
+飞控（ArduPilot 示例）
+• 吊舱 UART 接飞控 UART
+• RC 通道：Mount Pitch / Mount Yaw
+• 把飞控姿态回传给云台，增稳更好
+
+软件
+• SIYI FPV（安卓/Windows）、SIYI Assistant 升固件
+• 禁止拆云台、禁止加额外负载
             """.trimIndent(),
         ),
     )
